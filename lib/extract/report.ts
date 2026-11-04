@@ -1,5 +1,6 @@
 export const MAX_BYTES = 10 * 1024 * 1024;
 export const MAX_WORDS = 8000;
+export const MAX_CHARACTERS = 80000;
 export function words(text: string) { return text.trim().split(/\s+/u).filter(Boolean); }
 export function inspectReport(text: string) {
   const definitions = [['Problem statement', /problem statement|\bintroduction\b/iu], ['Objectives', /objectives?|\baims?\b/iu], ['Methodology', /methodology|\bmethods?\b/iu], ['Evaluation', /evaluation|\bresults?\b/iu], ['Limitations', /limitations?/iu], ['Future work', /future work|recommendations?/iu]] as const;
@@ -7,7 +8,8 @@ export function inspectReport(text: string) {
 }
 export function trimReport(text: string) {
   const tokens = words(text);
-  return { text: tokens.slice(0, MAX_WORDS).join(' '), removed: Math.max(0, tokens.length - MAX_WORDS) };
+  const result = tokens.slice(0, MAX_WORDS).join(' ').slice(0, MAX_CHARACTERS);
+  return { text: result, removed: Math.max(0, tokens.length - words(result).length) };
 }
 export async function extractReport(file: File): Promise<string> {
   if (file.size > MAX_BYTES) throw new Error('Choose a file smaller than 10 MB, or paste the relevant sections.');

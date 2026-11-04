@@ -81,6 +81,9 @@ $("export").addEventListener("click",()=>{
 $("restart").addEventListener("click",()=>{state={...state,screen:"input",questions:[],results:[],position:0};view();});
 $("clear").addEventListener("click",()=>{
   if(!confirm("Delete the saved report and all practice answers from this browser?"))return;
-  localStorage.removeItem(STORAGE_KEY);state={screen:"input",report:"",questions:[],results:[],position:0,startedAt:null};view();
+  let failed = false;
+  try { localStorage.removeItem(STORAGE_KEY); } catch { failed = true; }
+  state={screen:"input",report:"",questions:[],results:[],position:0,startedAt:null};view();
+  if(failed) $("storage-note").textContent="Browser storage is unavailable. Clear site data in your browser settings to remove saved reports.";
 });
 view();

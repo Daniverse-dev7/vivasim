@@ -36,6 +36,32 @@ test('file upload, draft deletion and mobile accessibility in both themes', asyn
 });
 test('API rejects missing consent and oversized requests; exposes safe health status', async ({ request }) => {
   expect((await request.post('/api/analyze',{data:{report}})).status()).toBe(400);
-  expect((await request.post('/api/analyze',{data:{report:'a'.repeat(130000),consent:true}})).status()).toBe(413);
+  expect((await request.post('/api/analyze',{data:{report:'a'.repeat(510000),consent:true}})).status()).toBe(413);
   expect((await request.get('/api/health')).status()).toBe(200);
+});
+
+test('long drafts require explicit trimming and do not silently enter practice', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Editable report preview').fill('x'.repeat(80001));
+  await expect(page.getByRole('button', {name:'Continue to offline practice'})).toBeDisabled();
+  await page.getByRole('button', {name:'Trim to report limits'}).click();
+  await expect(page.getByLabel('Editable report preview')).toHaveValue('x'.repeat(80000));
+});
+test('API accepts Unicode reports within limits and rejects excess characters', async ({ request }) => {
+  const unicode = 'تجربہ '.repeat(7000);
+  const response = await request.post('/api/analyze', {data:{report:unicode,consent:true}});
+  expect(response.status()).toBe(200);
+  expect((await response.json()).mode).toBe('local');
+  expect((await request.post('/api/analyze', {data:{report:'x'.repeat(80001),consent:true}})).status()).toBe(400);
+});
+
+test('canceling a practice replacement preserves saved answers', async ({ page }) => {
+  await page.goto('/');
+  const saved = JSON.stringify({screen:'results',report,questions:['Original question'],results:[{answer:'Original answer',score:50}],position:1});
+  await page.evaluate(value => localStorage.setItem('vivasim-practice-v1', value), saved);
+  await page.getByLabel('Editable report preview').fill(report);
+  page.once('dialog', dialog => dialog.dismiss());
+  await page.getByRole('button', {name:'Continue to offline practice'}).click();
+  expect(await page.evaluate(() => localStorage.getItem('vivasim-practice-v1'))).toBe(saved);
+  await expect(page.getByLabel('Editable report preview')).toBeVisible();
 });

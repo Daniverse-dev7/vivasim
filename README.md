@@ -2,7 +2,7 @@
 
 Survive your viva before it happens.
 
-Phase 1 foundation built with Next.js App Router, TypeScript and Tailwind. PDF/DOCX/TXT/MD extraction runs in the browser. The editor supports local draft recovery, section detection, explicit trimming to 8,000 words, dark/light themes, and consent-gated report review. The existing five-question offline practice MVP remains available at `/practice`.
+Phase 1 foundation built with Next.js App Router, TypeScript and Tailwind. PDF/DOCX/TXT/MD extraction runs in the browser. The editor supports local draft recovery, section detection, explicit trimming to 8,000 words and 80,000 characters, dark/light themes, and consent-gated report review. The existing five-question offline practice MVP remains available at `/practice`.
 
 ## Development
 
@@ -22,6 +22,8 @@ PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e
 Copy `.env.example` to `.env.local` and configure server-only credentials through secure environment settings. No keys are required for local practice. The optional review route supports an OpenAI-compatible primary and fallback endpoint, validates structured output, retries once, applies a 10-second timeout per request, and temporarily skips repeatedly failing providers. Native Claude/Gemini adapters, streaming and distributed budgets remain future work. Provider URLs are server configuration, never user inputs.
 
 `POST /api/analyze` accepts `{report, consent:true}` and returns `{mode, summary, focusAreas, requestId}`. Missing providers or unsuccessful requests return a clearly labeled local section checklist. `GET /api/health` reports configuration presence only, not live provider health.
+
+Request bodies are capped at 500 KB with a 10-second read deadline. The report limit is 8,000 words and 80,000 characters, shared with the editor and offline practice handoff.
 
 The rate gate is global **per server instance** (10 requests/minute, two active requests). Shared Redis limits, durable budgets and bot protection are required before public deployment. No report or answer data is intentionally logged or persisted on the server. The provider processes consented text under its own policies. See `/privacy`.
 
