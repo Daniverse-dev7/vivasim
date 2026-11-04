@@ -12,7 +12,8 @@
     "test": "node --import tsx --test tests/*.test.ts && node --test tests/*.test.mjs",
     "check": "npm run typecheck && npm test",
     "test:e2e": "playwright test",
-    "postinstall": "node scripts/prepare.mjs"
+    "postinstall": "node scripts/prepare.mjs",
+    "check:activation": "node scripts/check-activation.mjs"
   },
   "engines": {
     "node": ">=22.13.0"
