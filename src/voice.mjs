@@ -51,7 +51,17 @@ export function setupVoice() {
       stop.disabled = false;
       status.textContent = 'Recording… Stops automatically after three minutes.';
       timer = setTimeout(() => { if (instance.state === 'recording') instance.stop(); }, 180000);
-    } catch { release(); status.textContent = 'Microphone access was unavailable. Check browser permissions or type your answer.'; }
+    } catch (error) {
+      release();
+      const reasons = {
+        NotAllowedError: 'Microphone access was unavailable. Allow microphone access in browser settings or type your answer.',
+        NotFoundError: 'No microphone was found. Connect one or type your answer.',
+        NotReadableError: 'The microphone is busy or unavailable. Close other recording apps or type your answer.',
+        NotSupportedError: 'Audio recording is unsupported in this browser. Try another browser or type your answer.',
+        SecurityError: 'Microphone access is blocked by browser security settings. You can type your answer.'
+      };
+      status.textContent = reasons[error?.name] || 'Microphone access was unavailable. Check browser permissions or type your answer.';
+    }
     finally { pending = false; if (recorder?.state !== 'recording') record.disabled = !supported; }
   });
   stop.addEventListener('click', () => { if (recorder?.state === 'recording') recorder.stop(); });

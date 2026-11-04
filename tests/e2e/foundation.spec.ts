@@ -99,6 +99,7 @@ test('mobile voice recording can be replayed and is discarded on the next questi
   await page.locator('#report').fill(report);
   await page.locator('#start').click();
   await page.getByRole('button',{name:'Record answer',exact:true}).click();
+  await expect(page.locator('#voice-status')).toContainText('Recording…');
   await expect(page.getByRole('button',{name:'Stop recording'})).toBeEnabled();
   await page.waitForTimeout(300);
   await page.getByRole('button',{name:'Stop recording'}).click();
