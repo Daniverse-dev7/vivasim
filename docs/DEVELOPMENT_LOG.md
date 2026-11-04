@@ -42,3 +42,9 @@ Validation: type checks, unit/API tests, production build, and all 22 Chromium b
 Added score-component breakdowns and question-specific preparation guidance to current results and saved history, retaining the existing scoring weights. Short-answer zero scores have matching zero components. Versioned feedback travels with history and JSON exports; older sessions display a clear fallback. Added tests for component totals, question-specific suggestions and feedback persistence. No live AI grading, merge or deployment.
 
 Validation: type checks, unit/API tests, production build and all 23 Chromium browser tests passed, including saved-feedback persistence. Scoring remains an English-language heuristic rather than live AI assessment.
+
+## 2026-11-04 — Public-beta release preparation
+
+Defined focused beta scope and concrete release gates in LAUNCH_PLAN.md. Added a shared atomic daily AI-attempt budget through Redis REST, counting every retry/fallback and failing closed in production when configuration, quota or service availability prevents reservation. No student content enters budget keys. Added basic browser headers protecting against framing, MIME sniffing and unnecessary camera/location access. Provider spending caps, per-user abuse controls, live services, AI examiner integration and real-device QA remain release blockers. No paid services provisioned, merge or deployment performed.
+
+Validation: type checks, budget unit tests, existing unit/API tests, production build and all 23 Chromium browser cases passed. Budget service responses were mocked; live Redis reservations and actual provider spending controls remain unverified. User confirmed a free limited beta using free tiers only, with no paid subscriptions or automatic paid fallback.

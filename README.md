@@ -60,3 +60,7 @@ View saved feedback without replacing the current draft, export individual sessi
 ### Explainable practice feedback
 
 New answers include the existing heuristic's component breakdown (length, vocabulary overlap, reasoning phrases and limitation phrases) and question-specific preparation suggestions. Feedback is stored with sessions and included in JSON exports. Older sessions remain readable with a notice when detailed feedback is unavailable. These English-language signals do not check factual correctness or predict viva marks.
+
+## Public-beta readiness
+
+See `docs/LAUNCH_PLAN.md` for release scope and outstanding gates. Production AI review now requires `VIVASIM_BUDGET_REDIS_URL` and `VIVASIM_BUDGET_REDIS_TOKEN` for an Upstash-compatible Redis REST service. `VIVASIM_AI_DAILY_ATTEMPTS` caps global provider attempts per UTC day, including retries and fallback calls. Missing configuration, failed reservations or an exhausted budget cause local checklist fallback. This is a call-count cap, not a monetary budget or per-user abuse control. Set provider spending limits before release. Local development without budget credentials remains supported.
