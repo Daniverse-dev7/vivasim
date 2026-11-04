@@ -14,3 +14,11 @@ Reviewed the report editor, extraction, provider boundary, API, privacy statemen
 Added regression coverage for streamed body limits, stalled uploads, Unicode API input, explicit character trimming and preserving saved answers when replacement is canceled. Production dependency audit reported zero known vulnerabilities. Public deployment still requires shared rate/budget controls and live-provider validation; README lists remaining Phase 1 features and manual browser checks. No merge or deployment performed.
 
 Review validation completed: `npm run check`, `npm run build`, and `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:e2e` passed (8 browser cases, including PDF/DOCX extraction and mobile axe in both themes). `npm audit --omit=dev` reported 0 vulnerabilities. GitHub checks must also pass on the review-fix commit before merge.
+
+## 2026-11-04 — Project preparation and voice rehearsal
+
+Continued Phase 1 with optional locally saved project metadata, schema-validated context for consented AI review, and previewable section-balanced extractive condensation. Added local-voice question read-aloud and in-memory microphone recording/replay to practice, with a three-minute limit, question-change cleanup and mobile touch controls. Audio is never uploaded or scored. Metadata edits reset AI consent; draft deletion clears metadata. Added unit and browser regression coverage.
+
+Remaining: OCR, native provider adapters, distributed budgets/rate controls, live-provider verification, full AI examiner/rubric, transcription, durable session history and real-device browser QA. User priority is voice and mobile experience. No merge, environment publication or deployment authorized or performed.
+
+Validation: `npm run check` and production build passed. Eleven Chromium cases passed together, and the additional microphone-denial case passed separately (12 browser cases total). Mobile axe checks passed in both themes; real-device Safari/Android voice behavior still needs manual verification.

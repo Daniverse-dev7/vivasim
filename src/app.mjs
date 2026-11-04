@@ -1,5 +1,7 @@
 import { cleanReport, buildQuestions, gradeAnswer, summarize } from "./engine.mjs";
 
+import { setupVoice } from "./voice.mjs";
+const resetVoice = setupVoice();
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = "vivasim-practice-v1";
 const LIMIT = 80000;
@@ -20,6 +22,7 @@ function persist() {
   catch { $("storage-note").textContent="Browser storage is unavailable. Your progress may not survive refresh."; }
 }
 function view() {
+  resetVoice();
   const screen=state.screen;
   ["input","session","results"].forEach(name=>$(name+"-screen").hidden=name!==screen);
   $("steps").textContent=screen==="input"?"01 / SETUP":screen==="session"?"02 / PRACTICE":"03 / REVIEW";

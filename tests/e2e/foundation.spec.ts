@@ -65,3 +65,56 @@ test('canceling a practice replacement preserves saved answers', async ({ page }
   expect(await page.evaluate(() => localStorage.getItem('vivasim-practice-v1'))).toBe(saved);
   await expect(page.getByLabel('Editable report preview')).toBeVisible();
 });
+
+test('project details restore, reset consent, and delete with the draft', async ({ page }) => {
+  await page.goto('/');
+  await page.getByLabel('Editable report preview').fill(report);
+  await page.getByLabel('Project title').fill('Revision planner');
+  await page.getByLabel('Subject or discipline').fill('Computing');
+  await page.getByLabel('Study level').selectOption('undergraduate');
+  await page.reload();
+  await expect(page.getByLabel('Project title')).toHaveValue('Revision planner');
+  await page.getByRole('checkbox').check();
+  await page.getByLabel('Project title').fill('Updated project');
+  await expect(page.getByRole('checkbox')).not.toBeChecked();
+  page.on('dialog', dialog => dialog.accept());
+  await page.getByRole('button',{name:'Delete local draft'}).click();
+  await page.reload();
+  await expect(page.getByLabel('Project title')).toHaveValue('');
+});
+test('condensation previews later sections without changing the draft until applied', async ({ page }) => {
+  const original = 'Introduction\n' + 'background '.repeat(8100) + '\nResults\nKey evidence.\nLimitations\nSmall sample.';
+  await page.goto('/');
+  await page.getByLabel('Editable report preview').fill(original);
+  await page.getByRole('button',{name:'Preview balanced excerpts'}).click();
+  await expect(page.getByLabel('Proposed report')).toHaveValue(/Key evidence/);
+  await expect(page.getByLabel('Editable report preview')).toHaveValue(original);
+  await page.getByRole('button',{name:'Use shortened draft'}).click();
+  await expect(page.getByRole('button',{name:'Continue to offline practice'})).toBeEnabled();
+});
+test('mobile voice recording can be replayed and is discarded on the next question', async ({ page, context }) => {
+  await context.grantPermissions(['microphone']);
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('/legacy/index.html');
+  await page.locator('#report').fill(report);
+  await page.locator('#start').click();
+  await page.getByRole('button',{name:'Record answer',exact:true}).click();
+  await expect(page.getByRole('button',{name:'Stop recording'})).toBeEnabled();
+  await page.waitForTimeout(300);
+  await page.getByRole('button',{name:'Stop recording'}).click();
+  await expect(page.getByLabel('Your recorded answer')).toBeVisible();
+  await page.getByRole('button',{name:'Skip question'}).click();
+  await expect(page.getByLabel('Your recorded answer')).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('microphone denial leaves typed practice available', async ({ page }) => {
+  await page.addInitScript(() => { navigator.mediaDevices.getUserMedia = async () => { throw new DOMException('Denied', 'NotAllowedError'); }; });
+  await page.goto('/legacy/index.html');
+  await page.locator('#report').fill(report);
+  await page.locator('#start').click();
+  await page.getByRole('button',{name:'Record answer',exact:true}).click();
+  await expect(page.locator('#voice-status')).toContainText('Microphone access was unavailable');
+  await expect(page.locator('#answer')).toBeEnabled();
+  await expect(page.getByRole('button',{name:'Record answer',exact:true})).toBeEnabled();
+});

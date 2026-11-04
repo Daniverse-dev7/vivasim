@@ -31,10 +31,16 @@ The rate gate is global **per server instance** (10 requests/minute, two active 
 
 Implemented: responsive foundation, browser extraction and preview, 10 MB cap, scanned/garbled-file guidance, 8,000-word explicit truncation, draft autosave/delete, sample session, privacy page, error boundary, validated review API with fallback and a basic rate gate. Drafts are stored unencrypted in localStorage.
 
-Remaining Phase 1 work: optional OCR, section-aware condensation, project metadata fields, native provider adapters and shared production rate limiting. Live-provider behavior is unverified without credentials. The full AI examiner, scoring rubric, voice, adaptive sessions, IndexedDB history and social tools belong to subsequent phases. The old application from the exported conversation is still unrecovered.
+Remaining Phase 1 work: optional OCR, native provider adapters and shared production rate limiting. Live-provider behavior is unverified without credentials. The full AI examiner, scoring rubric, speech transcription, adaptive sessions, IndexedDB history and social tools belong to subsequent phases. The old application from the exported conversation is still unrecovered.
 
 ## Validation and manual QA
 
 Automated checks cover engine functions, extraction validation, provider fallback and data-message isolation, browser draft restoration, consent, offline practice, API rejection, and mobile axe checks. Mocked prompt-injection tests validate message separation, not a live model's resistance.
 
 Manual checks still required: Chrome Android, Safari iOS, Samsung Internet, Firefox, real complex/scanned/password-protected PDFs, slow 3G, Urdu input, screen-reader navigation and Lighthouse performance budgets. No production deployment has occurred.
+
+## Project preparation and voice rehearsal
+
+Optional title, subject and study level are saved locally and included as untrusted context with consented AI review. Editing them resets consent. Delete local draft clears these details too. Balanced excerpt previews distribute the word/character budget across detected sections (or paragraphs), retain source order and require explicit application. They are extractive, may omit evidence, and need human review.
+
+Offline practice offers local question read-aloud and up to three minutes of microphone recording with replay. Recordings remain in tab memory and are discarded on question changes or page exit. No audio is uploaded, transcribed or scored; type the answer for heuristic feedback. A local English voice and browser microphone support are required; typed practice remains available. Mobile controls have touch targets and wrapping layouts.

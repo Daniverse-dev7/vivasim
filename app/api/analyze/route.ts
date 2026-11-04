@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { reviewReport } from '@/lib/ai/provider';
 import { inspectReport, words, MAX_CHARACTERS } from '@/lib/extract/report';
-const input = z.object({ report: z.string().min(200).max(MAX_CHARACTERS), consent: z.literal(true) }).strict();
+import { projectSchema } from '@/lib/project';
+const input = z.object({ report: z.string().min(200).max(MAX_CHARACTERS), consent: z.literal(true), project: projectSchema.optional() }).strict();
 // Conservative global instance gate; a shared Redis gate is required before public deployment.
 let windowStart = 0, requests = 0, active = 0;
 export async function POST(req: Request) {
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
     if (timedOut) return reply({ error: 'request_timeout' }, 408);
     const data = input.safeParse(JSON.parse(Buffer.concat(chunks).toString('utf8')));
     if (!data.success || words(data.data.report).length > 8000) return reply({ error: 'invalid_input', message: 'Provide 200 characters to 8,000 words (at most 80,000 characters) and consent to AI processing.' }, 400);
-    const result = await reviewReport(data.data.report);
+    const result = await reviewReport(data.data.report, undefined, undefined, data.data.project);
     return reply(result ? { mode: 'ai', ...result } : { mode: 'local', summary: 'AI review is unavailable. This local checklist detects section headings only; it does not assess the report’s quality.', focusAreas: inspectReport(data.data.report).filter(s => !s.found).map(s => `Check your ${s.name.toLowerCase()} section.`) });
   } catch { return reply({ error: 'invalid_input', message: 'The report could not be read. Please retry.' }, 400); }
   finally { active--; }
