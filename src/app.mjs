@@ -1,7 +1,9 @@
 import { cleanReport, buildQuestions, gradeAnswer, summarize } from "./engine.mjs";
 
 import { setupVoice } from "./voice.mjs";
+import { setupDictation } from "./dictation.mjs";
 const resetVoice = setupVoice();
+const resetDictation = setupDictation(resetVoice);
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = "vivasim-practice-v1";
 const LIMIT = 80000;
@@ -22,6 +24,7 @@ function persist() {
   catch { $("storage-note").textContent="Browser storage is unavailable. Your progress may not survive refresh."; }
 }
 function view() {
+  resetDictation();
   resetVoice();
   const screen=state.screen;
   ["input","session","results"].forEach(name=>$(name+"-screen").hidden=name!==screen);
@@ -32,7 +35,7 @@ function view() {
     $("progress-text").textContent="Question "+(state.position+1)+" of 5";
     $("progress-fill").style.width=((state.position)/5*100)+"%";
     $("question").textContent=state.questions[state.position]??"";
-    $("answer").value="";
+    $("answer").value=typeof state.answerDraft === "string" ? state.answerDraft : "";
     $("answer").focus();
   }
   if(screen==="results"){
@@ -52,6 +55,7 @@ function view() {
   persist();
 }
 restore();
+$("answer").addEventListener("input", () => { state.answerDraft = $("answer").value; persist(); });
 $("report").addEventListener("input",e=>{state.report=cleanReport(e.target.value);$("counter").textContent=(state.report.trim()?state.report.trim().split(/\s+/).length:0)+" words";persist();});
 $("upload").addEventListener("change",async e=>{
   const file=e.target.files?.[0];if(!file)return;
@@ -61,7 +65,7 @@ $("upload").addEventListener("change",async e=>{
 $("start").addEventListener("click",()=>{
   if(state.report.trim().length<200){$("input-error").textContent="Please paste at least 200 characters from your report.";return;}
   $("input-error").textContent="";
-  state={...state,screen:"session",questions:buildQuestions(state.report),position:0,results:[],startedAt:new Date().toISOString()};view();
+  state={...state,screen:"session",questions:buildQuestions(state.report),position:0,results:[],answerDraft:"",startedAt:new Date().toISOString()};view();
 });
 function finish(){state.screen="results";view();}
 function submit(skip=false){
@@ -70,6 +74,7 @@ function submit(skip=false){
   if(!skip && answer.length<10){$("answer-error").textContent="Please provide at least 10 characters, or choose Skip.";return;}
   $("answer-error").textContent="";
   state.results.push(gradeAnswer(answer,state.report,state.position));
+  state.answerDraft = "";
   state.position++;
   if(state.position>=5)finish();else view();
 }

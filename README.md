@@ -44,3 +44,9 @@ Manual checks still required: Chrome Android, Safari iOS, Samsung Internet, Fire
 Optional title, subject and study level are saved locally and included as untrusted context with consented AI review. Editing them resets consent. Delete local draft clears these details too. Balanced excerpt previews distribute the word/character budget across detected sections (or paragraphs), retain source order and require explicit application. They are extractive, may omit evidence, and need human review.
 
 Offline practice offers local question read-aloud and up to three minutes of microphone recording with replay. Recordings remain in tab memory and are discarded on question changes or page exit. No audio is uploaded, transcribed or scored; type the answer for heuristic feedback. A local English voice and browser microphone support are required; typed practice remains available. Mobile controls have touch targets and wrapping layouts.
+
+### Optional browser dictation
+
+Practice now offers English speech-to-text where the browser SpeechRecognition API is available. It requires explicit consent for each question: the browser vendor may process microphone audio remotely, under its policies. Recognition is separate from local audio recording. Transcripts are capped at 5,000 characters, editable after stopping, and added to the answer only on request. Consent withdrawal, question changes and page exit invalidate late speech results. Backgrounding the tab stops recognition. Unfinished answers are saved locally for refresh recovery; clear practice data removes them.
+
+Speech lifecycle tests use a deterministic recognition mock; they do not verify a real vendor service or its accuracy. Real-device Chrome/Safari recognition and microphone QA remain necessary. No paid transcription service is configured.

@@ -22,3 +22,9 @@ Continued Phase 1 with optional locally saved project metadata, schema-validated
 Remaining: OCR, native provider adapters, distributed budgets/rate controls, live-provider verification, full AI examiner/rubric, transcription, durable session history and real-device browser QA. User priority is voice and mobile experience. No merge, environment publication or deployment authorized or performed.
 
 Validation: `npm run check` and production build passed. Eleven Chromium cases passed together, and the additional microphone-denial case passed separately (12 browser cases total). Mobile axe checks passed in both themes; real-device Safari/Android voice behavior still needs manual verification.
+
+## 2026-11-04 — Consent-gated browser dictation
+
+Added optional English browser speech recognition with explicit per-question consent, separate editable transcript preview, append-only application to the answer, three-minute capture limit and 5,000-character transcript cap. Recognition may use a browser vendor service; UI and privacy copy disclose that. Consent withdrawal, question changes and backgrounding stop recognition; late results are ignored. Added unfinished-answer recovery across refresh and lifecycle tests using mocked recognition. Local recording remains separate. Real speech-service accuracy and real-phone behavior remain unverified; no merge or deployment.
+
+Validation: type checks, unit/API tests, production build and all 17 Chromium browser cases passed. Five new browser cases cover consent, preview/application, answer recovery, revocation and stale events, question changes, speech permission failures and unsupported browsers. Speech responses are mocked; this does not establish real-provider accuracy or availability.

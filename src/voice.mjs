@@ -27,6 +27,7 @@ export function setupVoice() {
     status.textContent = supported ? 'Record up to three minutes. Audio stays in this tab; type your answer for feedback.' : 'Recording is unavailable in this browser.';
   }
   record.addEventListener('click', async () => {
+    window.dispatchEvent(new Event('vivasim-local-voice'));
     reset();
     const current = generation;
     pending = true; record.disabled = true;
@@ -67,6 +68,7 @@ export function setupVoice() {
   stop.addEventListener('click', () => { if (recorder?.state === 'recording') recorder.stop(); });
   discard.addEventListener('click', reset);
   speak.addEventListener('click', () => {
+    window.dispatchEvent(new Event('vivasim-local-voice'));
     speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(document.getElementById('question').textContent);
     // Use a local voice only; never send the report excerpt to a remote speech service.
