@@ -64,3 +64,9 @@ New answers include the existing heuristic's component breakdown (length, vocabu
 ## Public-beta readiness
 
 See `docs/LAUNCH_PLAN.md` for release scope and outstanding gates. Production AI review now requires `VIVASIM_BUDGET_REDIS_URL` and `VIVASIM_BUDGET_REDIS_TOKEN` for an Upstash-compatible Redis REST service. `VIVASIM_AI_DAILY_ATTEMPTS` caps global provider attempts per UTC day, including retries and fallback calls. Missing configuration, failed reservations or an exhausted budget cause local checklist fallback. This is a call-count cap, not a monetary budget or per-user abuse control. Set provider spending limits before release. Local development without budget credentials remains supported.
+
+### Multi-provider preparation chat
+
+`/chat` keeps one local transcript while students choose Groq, Google Gemini (OpenAI-compatible endpoint), Cerebras, OpenRouter or Hugging Face. Each adapter requires server-side key/model configuration and an explicit operator confirmation of current free-tier terms. OpenRouter is restricted to model IDs ending in `:free`. No service/model is claimed to be permanently free; ChatGPT/Claude consumer free plans do not imply free API access. There are no paid automatic fallbacks.
+
+On a provider quota error, students select another configured provider, consent to sending the full history there, and retry the pending message without duplicating it. The full ordered conversation is forwarded within an explicit 80-message/100,000-character limit; the UI reserves room for responses. Nothing is silently dropped. Models may impose smaller context limits. A shared app budget still applies across providers; switching does not bypass app limits. Export and deletion are available separately from practice history. Credentials/free-tier allowances and live provider behavior remain unverified until accounts are configured.
