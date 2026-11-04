@@ -8,3 +8,11 @@ test("extracts repeated technical keywords",()=>{assert.ok(reportKeywords("neura
 test("short answers score zero",()=>{assert.equal(gradeAnswer("yes","neural dataset",0).score,0)});
 test("longer grounded answers do not score below empty answers",()=>{const r="neural classifier dataset validation accuracy";const a=gradeAnswer("We implemented a neural classifier and evaluated accuracy using our dataset because we needed a reproducible result with validation metrics.",r,0);assert.ok(a.score>0)});
 test("summary calculates mean safely",()=>{assert.deepEqual(summarize([]),{score:0,answered:0,verdict:"No answers yet"});assert.equal(summarize([{score:40},{score:80}]).score,60)});
+
+test('feedback components explain the score and short answers have zero components',()=>{
+  for(const answer of ['yes', 'We implemented a revision planner because students needed reminders, although offline storage has limitations.']){
+    const result=gradeAnswer(answer,'revision planner storage students reminders',1);
+    assert.equal(Object.values(result.feedback.breakdown).reduce((a,b)=>a+b,0),result.score);
+    assert.ok(result.feedback.suggestions.some(s=>s.includes('alternative')));
+  }
+});
