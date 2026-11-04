@@ -56,3 +56,7 @@ Speech lifecycle tests use a deterministic recognition mock; they do not verify 
 Completed practice sessions are saved to IndexedDB on the current device, with up to 50 sessions. History stores project title, questions (including any quoted report excerpts), submitted answers, completion time and heuristic scores. Raw reports, audio and unsubmitted drafts are not copied into history. The active practice draft remains separately stored in localStorage.
 
 View saved feedback without replacing the current draft, export individual sessions as JSON, delete individual sessions or delete all history. Save session retries failed saves without creating duplicates. Full history rejects new entries instead of evicting older work. Clear local data removes both the current practice state and all history; the home editor draft remains separate. Storage is unencrypted, device-specific and subject to browser eviction—export backups. There is no cloud account or synchronization.
+
+### Explainable practice feedback
+
+New answers include the existing heuristic's component breakdown (length, vocabulary overlap, reasoning phrases and limitation phrases) and question-specific preparation suggestions. Feedback is stored with sessions and included in JSON exports. Older sessions remain readable with a notice when detailed feedback is unavailable. These English-language signals do not check factual correctness or predict viva marks.

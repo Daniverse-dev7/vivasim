@@ -1,5 +1,5 @@
 import { listSessions, deleteSession, clearSessions } from './history.mjs';
-import { summarize } from './engine.mjs';
+import { summarize, feedbackLines } from './engine.mjs';
 export function downloadSession(session) {
   const url = URL.createObjectURL(new Blob([JSON.stringify({app:'VivaSim',...session}, null, 2)], {type:'application/json'}));
   const link = document.createElement('a'); link.href = url; link.download = 'vivasim-session.json'; link.click();
@@ -17,7 +17,9 @@ export function setupHistory() {
     for (const answer of session.answers) {
       const article = node('article', ''); article.className = 'review-item';
       article.append(node('h4', session.questions[answer.questionIndex]), node('p', answer.answer || '(Skipped)'), node('p', `Practice heuristic: ${answer.score}/100 · ${answer.wordCount} words`));
-      detail.append(article);
+      const guidance = node('ul', '');
+      for (const text of feedbackLines(answer)) guidance.append(node('li', text));
+      article.append(guidance); detail.append(article);
     }
     detail.append(button('Close saved session', () => { detail.hidden = true; }));
     detail.hidden = false; detail.focus();

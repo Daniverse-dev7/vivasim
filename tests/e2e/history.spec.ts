@@ -67,3 +67,14 @@ test('full history refuses new records without evicting existing sessions', asyn
   await page.reload();
   await expect(page.locator('#history-list > article')).toHaveCount(50);
 });
+
+test('score explanations and suggestions persist in saved feedback', async ({page}) => {
+  await complete(page);
+  await expect(page.locator('#review')).toContainText('Score signals:');
+  await expect(page.locator('#review')).toContainText('who it affects');
+  await expect(page.locator('#save-status')).toHaveText('Session saved on this device.');
+  await page.reload();
+  await page.getByRole('button',{name:'View saved session',exact:true}).click();
+  await expect(page.locator('#history-detail')).toContainText('Score signals:');
+  await expect(page.locator('#history-detail')).toContainText('do not assess factual correctness');
+});

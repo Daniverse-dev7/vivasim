@@ -36,3 +36,9 @@ Follow-up: switching to local voice practice now preserves an unapplied transcri
 Added IndexedDB history for completed practice sessions, capped at 50 with no silent eviction. Auto-save and manual retry use a stable session ID to avoid duplicates. History views do not replace the active draft; each session supports JSON export and confirmed deletion. Clear local data now also clears saved history. Serialized storage operations preserve ordering between in-flight saves and deletion. History omits raw reports, audio and unsubmitted drafts; questions may contain report excerpts. Storage failure leaves current results/export available. Added snapshot unit tests and browser coverage for reload, duplicate save, export, deletion, blocked storage and capacity. No merge or deployment.
 
 Validation: type checks, unit/API tests, production build, and all 22 Chromium browser cases passed, including four new history cases. Snapshot tests verify that raw reports and unfinished drafts are excluded and oversized sessions are rejected. No cloud sync or real-device storage-eviction guarantees are provided.
+
+## 2026-11-04 — Explainable practice feedback
+
+Added score-component breakdowns and question-specific preparation guidance to current results and saved history, retaining the existing scoring weights. Short-answer zero scores have matching zero components. Versioned feedback travels with history and JSON exports; older sessions display a clear fallback. Added tests for component totals, question-specific suggestions and feedback persistence. No live AI grading, merge or deployment.
+
+Validation: type checks, unit/API tests, production build and all 23 Chromium browser tests passed, including saved-feedback persistence. Scoring remains an English-language heuristic rather than live AI assessment.

@@ -1,4 +1,4 @@
-import { cleanReport, buildQuestions, gradeAnswer, summarize } from "./engine.mjs";
+import { cleanReport, buildQuestions, gradeAnswer, summarize, feedbackLines } from "./engine.mjs";
 
 import { setupVoice } from "./voice.mjs";
 import { setupDictation } from "./dictation.mjs";
@@ -52,7 +52,10 @@ function view() {
       const title=document.createElement("h3");title.textContent=(index+1)+". "+(state.questions[item.questionIndex]||"Question");
       const metric=document.createElement("p");metric.className="review-score";metric.textContent="Practice heuristic: "+item.score+"/100 · "+item.wordCount+" words";
       const answer=document.createElement("p");answer.textContent=item.answer||"(Skipped)";
-      card.append(title,metric,answer);list.append(card);
+      card.append(title,metric,answer);
+      const guidance=document.createElement("ul");
+      for(const text of feedbackLines(item)){const li=document.createElement("li");li.textContent=text;guidance.append(li);}
+      card.append(guidance);list.append(card);
     });
   }
   persist();

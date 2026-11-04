@@ -11,7 +11,7 @@ export function sessionSnapshot(state) {
     completedAt: state.completedAt,
     title: typeof state.project?.title === 'string' ? state.project.title.slice(0, 160) : '',
     questions: state.questions,
-    answers: state.results.map(({questionIndex, answer, score, wordCount}) => ({questionIndex, answer, score, wordCount})),
+    answers: state.results.map(({questionIndex, answer, score, wordCount, feedback}) => ({questionIndex, answer, score, wordCount, ...(feedback ? {feedback} : {})})),
     mode: 'offline heuristic practice',
   };
   if (!validSession(session) || JSON.stringify(session).length > 250000) throw new Error('This session is too large or invalid for history. Export the current results instead.');
