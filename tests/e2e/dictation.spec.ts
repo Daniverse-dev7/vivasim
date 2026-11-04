@@ -82,3 +82,14 @@ test('unsupported speech recognition keeps the typed workflow usable', async ({p
   await page.locator('#submit').click();
   await expect(page.locator('#progress-text')).toHaveText('Question 2 of 5');
 });
+
+test('switching to local voice keeps the unapplied transcript', async ({page}) => {
+  await setup(page);
+  await page.locator('#dictation-consent').check();
+  await page.locator('#dictation-start').click();
+  await result(page, 'Keep this transcript.');
+  await page.locator('#dictation-stop').click();
+  await page.locator('#voice-speak').click();
+  await expect(page.locator('#dictation-preview')).toHaveValue('Keep this transcript.');
+  await expect(page.locator('#dictation-consent')).not.toBeChecked();
+});

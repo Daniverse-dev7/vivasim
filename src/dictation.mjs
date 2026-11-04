@@ -86,7 +86,10 @@ export function setupDictation(resetVoice) {
     status.textContent = 'Transcript added. Edit your answer before submitting for heuristic feedback.';
   });
   window.addEventListener('pagehide', reset);
-  window.addEventListener('vivasim-local-voice', reset);
+  window.addEventListener('vivasim-local-voice', () => {
+    abort(); consent.checked = false; controls();
+    status.textContent = 'Dictation stopped for local voice practice. Your transcript preview is kept.';
+  });
   document.addEventListener('visibilitychange', () => { if (document.hidden) { abort(); status.textContent = 'Dictation stopped when you left the tab. Review captured text before restarting.'; } });
   reset();
   return reset;
