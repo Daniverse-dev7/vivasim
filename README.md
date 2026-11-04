@@ -31,7 +31,7 @@ The rate gate is global **per server instance** (10 requests/minute, two active 
 
 Implemented: responsive foundation, browser extraction and preview, 10 MB cap, scanned/garbled-file guidance, 8,000-word explicit truncation, draft autosave/delete, sample session, privacy page, error boundary, validated review API with fallback and a basic rate gate. Drafts are stored unencrypted in localStorage.
 
-Remaining Phase 1 work: optional OCR, native provider adapters and shared production rate limiting. Live-provider behavior is unverified without credentials. The full AI examiner, scoring rubric, speech transcription, adaptive sessions, IndexedDB history and social tools belong to subsequent phases. The old application from the exported conversation is still unrecovered.
+Remaining Phase 1 work: optional OCR, native provider adapters and shared production rate limiting. Live-provider behavior is unverified without credentials. The full AI examiner, scoring rubric, speech transcription, adaptive sessions, cloud synchronization and social tools belong to subsequent phases. The old application from the exported conversation is still unrecovered.
 
 ## Validation and manual QA
 
@@ -50,3 +50,9 @@ Offline practice offers local question read-aloud and up to three minutes of mic
 Practice now offers English speech-to-text where the browser SpeechRecognition API is available. It requires explicit consent for each question: the browser vendor may process microphone audio remotely, under its policies. Recognition is separate from local audio recording. Transcripts are capped at 5,000 characters, editable after stopping, and added to the answer only on request. Consent withdrawal, question changes and page exit invalidate late speech results. Backgrounding the tab stops recognition. Unfinished answers are saved locally for refresh recovery; clear practice data removes them.
 
 Speech lifecycle tests use a deterministic recognition mock; they do not verify a real vendor service or its accuracy. Real-device Chrome/Safari recognition and microphone QA remain necessary. No paid transcription service is configured.
+
+### Saved session history
+
+Completed practice sessions are saved to IndexedDB on the current device, with up to 50 sessions. History stores project title, questions (including any quoted report excerpts), submitted answers, completion time and heuristic scores. Raw reports, audio and unsubmitted drafts are not copied into history. The active practice draft remains separately stored in localStorage.
+
+View saved feedback without replacing the current draft, export individual sessions as JSON, delete individual sessions or delete all history. Save session retries failed saves without creating duplicates. Full history rejects new entries instead of evicting older work. Clear local data removes both the current practice state and all history; the home editor draft remains separate. Storage is unencrypted, device-specific and subject to browser eviction—export backups. There is no cloud account or synchronization.

@@ -6,7 +6,9 @@ const resetVoice = setupVoice();
 const resetDictation = setupDictation(resetVoice);
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = "vivasim-practice-v1";
-const LIMIT = 80000;
+import { sessionSnapshot, saveSession, clearSessions } from "./history.mjs";
+import { setupHistory } from "./history-ui.mjs";
+const refreshHistory = setupHistory();
 let state = {screen:"input",report:"",questions:[],results:[],position:0,startedAt:null};
 
 function restore() {
@@ -39,6 +41,7 @@ function view() {
     $("answer").focus();
   }
   if(screen==="results"){
+    $("save-status").textContent="Completed sessions are saved on this device. Use Save session to retry if needed.";
     const summary=summarize(state.results);
     $("final-score").textContent=summary.score+"/100";
     $("verdict").textContent=summary.verdict;
@@ -65,9 +68,20 @@ $("upload").addEventListener("change",async e=>{
 $("start").addEventListener("click",()=>{
   if(state.report.trim().length<200){$("input-error").textContent="Please paste at least 200 characters from your report.";return;}
   $("input-error").textContent="";
-  state={...state,screen:"session",questions:buildQuestions(state.report),position:0,results:[],answerDraft:"",startedAt:new Date().toISOString()};view();
+  state={...state,screen:"session",questions:buildQuestions(state.report),position:0,results:[],answerDraft:"",sessionId:crypto.randomUUID(), completedAt:null, startedAt:new Date().toISOString()};view();
 });
-function finish(){state.screen="results";view();}
+async function archive() {
+  const id = state.sessionId ||= crypto.randomUUID();
+  state.completedAt ||= new Date().toISOString(); persist();
+  try {
+    const snapshot = sessionSnapshot(state);
+    await saveSession(snapshot);
+    if (state.sessionId === id) $("save-status").textContent = 'Session saved on this device.';
+    await refreshHistory();
+  } catch (error) { if (state.sessionId === id) $("save-status").textContent = error.message; }
+}
+function finish(){state.screen="results";state.completedAt=new Date().toISOString();view();void archive();}
+$("save-session").addEventListener("click", () => { void archive(); });
 function submit(skip=false){
   if(state.screen!=="session")return;
   const answer=skip?"":$("answer").value.trim();
@@ -87,11 +101,12 @@ $("export").addEventListener("click",()=>{
   const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="vivasim-practice.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 });
 $("restart").addEventListener("click",()=>{state={...state,screen:"input",questions:[],results:[],position:0};view();});
-$("clear").addEventListener("click",()=>{
-  if(!confirm("Delete the saved report and all practice answers from this browser?"))return;
+$("clear").addEventListener("click",async ()=>{
+  if(!confirm("Delete the current practice report, answers and all saved sessions from this browser? The home editor draft is separate."))return;
   let failed = false;
   try { localStorage.removeItem(STORAGE_KEY); } catch { failed = true; }
   state={screen:"input",report:"",questions:[],results:[],position:0,startedAt:null};view();
+  try { await clearSessions(); await refreshHistory(); $("history-detail").hidden = true; } catch { failed = true; }
   if(failed) $("storage-note").textContent="Browser storage is unavailable. Clear site data in your browser settings to remove saved reports.";
 });
 view();

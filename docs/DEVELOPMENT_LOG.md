@@ -30,3 +30,9 @@ Added optional English browser speech recognition with explicit per-question con
 Validation: type checks, unit/API tests, production build and all 17 Chromium browser cases passed. Five new browser cases cover consent, preview/application, answer recovery, revocation and stale events, question changes, speech permission failures and unsupported browsers. Speech responses are mocked; this does not establish real-provider accuracy or availability.
 
 Follow-up: switching to local voice practice now preserves an unapplied transcript while withdrawing dictation consent. The added regression case passed locally, bringing the browser suite to 18 cases.
+
+## 2026-11-04 — Device-local session history
+
+Added IndexedDB history for completed practice sessions, capped at 50 with no silent eviction. Auto-save and manual retry use a stable session ID to avoid duplicates. History views do not replace the active draft; each session supports JSON export and confirmed deletion. Clear local data now also clears saved history. Serialized storage operations preserve ordering between in-flight saves and deletion. History omits raw reports, audio and unsubmitted drafts; questions may contain report excerpts. Storage failure leaves current results/export available. Added snapshot unit tests and browser coverage for reload, duplicate save, export, deletion, blocked storage and capacity. No merge or deployment.
+
+Validation: type checks, unit/API tests, production build, and all 22 Chromium browser cases passed, including four new history cases. Snapshot tests verify that raw reports and unfinished drafts are excluded and oversized sessions are rejected. No cloud sync or real-device storage-eviction guarantees are provided.
